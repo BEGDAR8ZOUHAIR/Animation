@@ -1,14 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, View } from "react-native";
-import Animated, { useAnimatedGestureHandler, useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
+import Animated, { useAnimatedGestureHandler, useAnimatedStyle, useSharedValue, withRepeat, withSpring } from "react-native-reanimated";
 import { PanGestureHandler } from 'react-native-gesture-handler';
 
 const SIZE = 80;
 const CIRCLE_RADIUS = SIZE * 2;
 
+const handleRotate = (progress) =>
+{
+    'worklet';
+    return `${progress.value * 2 * Math.PI}rad`;
+};
+
 const PangestureHandler = () =>
 {
-
+    const progress = useSharedValue(1);
+    const scale = useSharedValue(2);
     const translationX = useSharedValue(0);
     const translationY = useSharedValue(0);
 
@@ -25,20 +32,36 @@ const PangestureHandler = () =>
         },
         onEnd: () =>
         {
-            translationX.value = withSpring(0);
-            translationY.value = withSpring(0);
+            const distance = Math.sqrt(Math.pow(translationX.value, 2) + Math.pow(translationY.value, 2));
+
+            if (distance > CIRCLE_RADIUS)
+            {
+                translationX.value = withSpring(0);
+                translationY.value = withSpring(0);
+            }
         },
     });
 
     const rStyle = useAnimatedStyle(() =>
     {
         return {
+            opacity: progress.value,
+            borderRadius: progress.value * SIZE / 2,
             transform: [
                 { translateX: translationX.value },
-                { translateY: translationY.value }
+                { translateY: translationY.value },
+                { scale: scale.value },
+                { rotate: handleRotate(progress) }
             ]
         };
-    });
+    }, []);
+
+    useEffect(() =>
+    {
+        progress.value = withRepeat(withSpring(0.5), 5, true)
+        scale.value = withRepeat(withSpring(1), 5, true)
+    }, [])
+
 
     return (
         <View style={styles.container}>
