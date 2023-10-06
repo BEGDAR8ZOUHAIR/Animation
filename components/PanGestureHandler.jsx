@@ -1,6 +1,12 @@
 import React, { useEffect } from "react";
-import { StyleSheet, View } from "react-native";
-import Animated, { useAnimatedGestureHandler, useAnimatedStyle, useSharedValue, withRepeat, withSpring } from "react-native-reanimated";
+import { StyleSheet, View , Text} from "react-native";
+import Animated,
+{
+    useAnimatedGestureHandler,
+    useAnimatedStyle, useSharedValue,
+    withRepeat,
+    withSpring
+} from "react-native-reanimated";
 import { PanGestureHandler } from 'react-native-gesture-handler';
 
 const SIZE = 80;
@@ -67,7 +73,8 @@ const PangestureHandler = () =>
         <View style={styles.container}>
             <View style={styles.circle}>
                 <PanGestureHandler onGestureEvent={panGestureEvent} >
-                    <Animated.View style={[styles.square, rStyle]} />
+                    <Animated.View style={[styles.square, rStyle]} >
+                    </Animated.View>
                 </PanGestureHandler>
             </View>
         </View>
@@ -88,7 +95,12 @@ const styles = StyleSheet.create({
         backgroundColor: "tomato",
         justifyContent: "center",
         alignItems: "center",
-        borderRadius: 20
+        borderRadius: 20,
+        shadowColor: "black",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.5,
+        shadowRadius: 2
+        
     },
     circle: {
         height: CIRCLE_RADIUS * 2,
