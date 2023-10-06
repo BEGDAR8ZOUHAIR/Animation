@@ -1,38 +1,52 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import Animated, { useAnimatedGestureHandler, useAnimatedStyle, useSharedValue } from "react-native-reanimated";
+import Animated, { useAnimatedGestureHandler, useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
 import { PanGestureHandler } from 'react-native-gesture-handler';
 
-const SIZE = 100;
+const SIZE = 80;
+const CIRCLE_RADIUS = SIZE * 2;
 
 const PangestureHandler = () =>
 {
-    
+
     const translationX = useSharedValue(0);
+    const translationY = useSharedValue(0);
 
     const panGestureEvent = useAnimatedGestureHandler({
-        onStart: (event) => { },
-        onActive: (event) =>
+        onStart: (event, context) =>
         {
-            translationX.value = event.translationX;
+            context.translateX = translationX.value;
+            context.translateY = translationY.value;
         },
-        onEnd: (event) => { },
+        onActive: (event, context) =>
+        {
+            translationX.value = event.translationX + context.translateX;
+            translationY.value = event.translationY + context.translateY;
+        },
+        onEnd: () =>
+        {
+            translationX.value = withSpring(0);
+            translationY.value = withSpring(0);
+        },
     });
 
     const rStyle = useAnimatedStyle(() =>
     {
         return {
             transform: [
-                { translateX: translationX.value }
+                { translateX: translationX.value },
+                { translateY: translationY.value }
             ]
         };
     });
 
     return (
         <View style={styles.container}>
-            <PanGestureHandler onGestureEvent={panGestureEvent} >
-                <Animated.View style={[styles.square, rStyle]} />
-            </PanGestureHandler>
+            <View style={styles.circle}>
+                <PanGestureHandler onGestureEvent={panGestureEvent} >
+                    <Animated.View style={[styles.square, rStyle]} />
+                </PanGestureHandler>
+            </View>
         </View>
     );
 }
@@ -48,9 +62,19 @@ const styles = StyleSheet.create({
     square: {
         height: SIZE,
         width: SIZE,
-        backgroundColor: "green",
+        backgroundColor: "tomato",
         justifyContent: "center",
         alignItems: "center",
         borderRadius: 20
+    },
+    circle: {
+        height: CIRCLE_RADIUS * 2,
+        width: CIRCLE_RADIUS * 2,
+        borderRadius: CIRCLE_RADIUS,
+        justifyContent: "center",
+        alignItems: "center",
+        borderWidth: 4,
+        borderColor: "tomato",
     }
+
 });
